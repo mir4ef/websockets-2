@@ -1,0 +1,29 @@
+{
+  "name": "websockets",
+  "description": "Websockets",
+  "version": "0.0.1",
+  "author": "Miroslav Georgiev <mir4ef@gmail.com>",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mir4ef/websockets-2.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mir4ef/websockets-2/issues"
+  },
+  "homepage": "https://github.com/mir4ef/websockets-2",
+  "engines": {
+    "node": ">=6.3.0"
+  },
+  "main": "server.js",
+  "license": "MIT",
+  "dependencies": {
+    "body-parser": "^1.14.1",
+    "compression": "^1.6.1",
+    "express": "^4.12.4",
+    "helmet": "^3.0.0",
+    "morgan": "^1.5.3",
+    "spdy": "^3.4.4",
+    "uws": "^0.12.0"
+  }
+}
