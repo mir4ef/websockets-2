@@ -1,7 +1,7 @@
 /**
  * @file helpers.js Helper functions
  * @author Miroslav Georgiev
- * @version 0.0.1
+ * @version 0.0.2
  */
 'use strict';
 
@@ -9,7 +9,7 @@
  * @description Handler to set the headers to handle CORS requests
  * @param {Object} req The request object
  * @param {Object} res The response object
- * @param next
+ * @param {Function} next The callback function to allow the application to continue
  */
 exports.handleCORS = (req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST');
@@ -18,13 +18,19 @@ exports.handleCORS = (req, res, next) => {
 };
 
 /**
- * @description Handler for server errors and returns an error message to the client
- * @param {Object} err The error object
+ * @description Handler for all application level errors and returns a json with the error message to the caller
+ * @param {String} message The error message to be returned with the response
+ * @param {Number} code The error code for the server response
  * @param {Object} req The request object
  * @param {Object} res The response object
- * @param next
+ * @param {Function} next The call back function to allow the application to continue
+ * @returns {Object} Object containing the error message
  */
-exports.handleError = (err, req, res, next) => res.status(err.code || 500).json({ success: false, message: err.message });
+exports.handleErrors = ({ message = 'An error occurred', code = 500 }, req, res, next) => {
+    console.error(`${new Date()}: ERROR: error code '${code}' and message '${message}'.`);
+
+    return res.status(code).json({ success: false, message: message });
+};
 
 /**
  * @description Handler for HTTP request to redirect them to HTTPS
