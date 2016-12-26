@@ -1,7 +1,7 @@
 /**
  * @file server.js
  * @author Miroslav Georgiev
- * @version 0.0.2
+ * @version 0.0.3
  */
 'use strict';
 
@@ -27,11 +27,11 @@ const options = {
 };
 const server = spdy.createServer(options, app);
 const WebSocketServer = require('uws').Server;
-const socketOptions = {
+const wssOptions = {
     server: server,
     path: '/api/v1/stream'
 };
-const wss = new WebSocketServer(socketOptions);
+const wss = new WebSocketServer(wssOptions);
 require('./server/routes/v1/stream')(wss);
 
 // print if debugging logs are enabled
