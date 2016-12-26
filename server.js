@@ -1,7 +1,7 @@
 /**
  * @file server.js
  * @author Miroslav Georgiev
- * @version 0.0.1
+ * @version 0.0.2
  */
 'use strict';
 
@@ -27,10 +27,11 @@ const options = {
 };
 const server = spdy.createServer(options, app);
 const WebSocketServer = require('uws').Server;
-const wss = new WebSocketServer({
+const socketOptions = {
     server: server,
     path: '/api/v1/stream'
-});
+};
+const wss = new WebSocketServer(socketOptions);
 require('./server/routes/v1/stream')(wss);
 
 // print if debugging logs are enabled
@@ -52,7 +53,7 @@ app.use(helmet());
 
 // use body parser to get info from POST requests
 // for parsing application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.urlencoded({ extended: false }));
 // for parsing application/json
 app.use(bodyParser.json());
 
