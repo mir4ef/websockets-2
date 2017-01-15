@@ -1,7 +1,7 @@
 /**
  * @file server.js
  * @author Miroslav Georgiev
- * @version 0.0.3
+ * @version 0.0.4
  */
 'use strict';
 
@@ -33,6 +33,12 @@ const wssOptions = {
 };
 const wss = new WebSocketServer(wssOptions);
 require('./server/routes/v1/stream')(wss);
+const RateLimit = require('express-rate-limit');
+const limiter = new RateLimit({
+    windowMs: config.windowMs * 60 * 1000, // minutes windows to track requests (default 25)
+    max: config.maxRequests, // limit each IP to maximum requests per windowMs (default 150)
+    delayMs: 0 // disable delaying - full speed until the max limit is reached
+});
 
 // print if debugging logs are enabled
 if (config.debug) {
@@ -44,6 +50,15 @@ if (config.debug) {
     app.use(morgan('dev'));
 }
 
+// enable when you're behind a reverse proxy (Heroku, Bluemix, AWS if you use an ELB, custom Nginx setup, etc)
+if (config.trustProxy) {
+    app.enable('trust proxy');
+
+    if (config.debug) {
+        console.info(`${new Date()}: 'trust proxy' enabled!`);
+    }
+}
+
 // compress static files (JavaScript, CSS, images)
 // MUST BE PLACED BEFORE DEFINING THE STATIC FILES FOLDER/PATH!!!
 app.use(compress());
@@ -51,11 +66,14 @@ app.use(compress());
 // protect the app from some well-known web vulnerabilities by setting HTTP headers appropriately
 app.use(helmet());
 
+// apply rate limiter to all requests
+app.use(limiter);
+
 // use body parser to get info from POST requests
 // for parsing application/x-www-form-urlencoded
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ limit: '5mb', extended: false }));
 // for parsing application/json
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: '5mb' }));
 
 // handle CORS requests
 app.use(helpers.handleCORS);
@@ -67,7 +85,7 @@ app.use(express.static('public'));
 app.use('/api/v1', apiRoutesV1);
 
 // middleware to handle server side errors
-app.use(helpers.handleError);
+app.use(helpers.handleErrors);
 
 // catch all routes and send the user to the frontend
 // has to be registered after API ROUTES
