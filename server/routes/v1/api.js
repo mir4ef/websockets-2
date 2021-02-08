@@ -1,12 +1,10 @@
 /**
  * @file api.js contains API routes used by the application
  * @author Miroslav Georgiev
- * @version 0.0.1
+ * @version 0.0.2
  */
 
 'use strict';
-
-const config = require('../../config');
 
 module.exports = (app, express) => {
     const apiRouter = express.Router();
